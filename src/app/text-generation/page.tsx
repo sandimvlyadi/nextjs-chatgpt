@@ -10,14 +10,12 @@ import OpenAI from "openai";
 import { useEffect, useState } from "react";
 
 export default function ImageGeneration() {
-  const [chats, setChats] = useState(
-    [] as {
-      message: string;
-      isUser: boolean;
-      revisied_prompt?: string;
-      url?: string;
-    }[]
-  );
+  const [chats, setChats] = useState([
+    {
+      role: "system",
+      content: "You are a helpful assistant.",
+    },
+  ] as { role: string; content: string }[]);
   const [message, setMessage] = useState("");
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -50,29 +48,27 @@ export default function ImageGeneration() {
   };
 
   const handleClick = async () => {
-    setChats((prevChats) => [
-      ...prevChats,
-      { message, isUser: true, revisied_prompt: "", url: "" },
-    ]);
+    setChats((prevChats) => [...prevChats, { role: "user", content: message }]);
 
     setIsProcessing(true);
     try {
-      const response = await openai.images.generate({
-        model: "dall-e-3",
-        prompt: message,
-        n: 1,
-        size: "1024x1024",
+      const response = await openai.chat.completions.create({
+        messages: chats.map((chat) => ({
+          role: chat.role,
+          content: chat.content,
+        })) as any,
+        model: "gpt-4",
       });
 
-      setChats((prevChats) => [
-        ...prevChats,
-        {
-          message: "",
-          isUser: false,
-          revisied_prompt: response.data[0].revised_prompt,
-          url: response.data[0].url,
-        },
-      ]);
+      response.choices.forEach((choice) => {
+        setChats((prevChats) => [
+          ...prevChats,
+          {
+            role: choice.message.role as any,
+            content: choice.message.content as any,
+          },
+        ]);
+      });
 
       setIsProcessing(false);
       setMessage("");
@@ -86,32 +82,25 @@ export default function ImageGeneration() {
   const renderChat = () => {
     if (chats.length > 0) {
       return chats.map((chat, index) => {
+        if (chat.role === "system") {
+          return null;
+        }
+
         return (
           <div
             key={index}
             className={`flex gap-4 ${
-              chat.isUser ? "justify-end" : "justify-start"
+              chat.role === "user" ? "justify-end" : "justify-start"
             }`}
           >
             <div
               className={`p-4 rounded-lg max-w-[50vw] ${
-                chat.isUser ? "bg-slate-900 text-white" : "bg-slate-700"
+                chat.role === "user"
+                  ? "bg-slate-900 text-white"
+                  : "bg-slate-700"
               }`}
             >
-              {chat.isUser ? (
-                chat.message
-              ) : (
-                <>
-                  <div className="text-xs mb-2 text-slate-300">
-                    {chat.revisied_prompt}
-                  </div>
-                  <img
-                    src={chat.url}
-                    alt="Generated Image"
-                    className="rounded-lg"
-                  />
-                </>
-              )}
+              {chat.content}
             </div>
           </div>
         );
