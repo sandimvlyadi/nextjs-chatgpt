@@ -14,7 +14,7 @@ import Link from "next/link";
 import OpenAI from "openai";
 import { useEffect, useState } from "react";
 
-export default function TextGeneration() {
+export default function TextGenerationCustom() {
   const [chats, setChats] = useState([
     {
       role: "system",
@@ -37,43 +37,6 @@ export default function TextGeneration() {
     }
   }, [message]);
 
-  useEffect(() => {
-    if (chats.length > 1) {
-      const last = chats[chats.length - 1];
-      if (last.role === "user" && !isProcessing) {
-        fetchCompletion();
-      }
-    }
-  }, [chats]);
-
-  const fetchCompletion = async () => {
-    setIsProcessing(true);
-    try {
-      const response = await openai.chat.completions.create({
-        messages: chats.map((chat) => ({
-          role: chat.role,
-          content: chat.content,
-        })) as any,
-        model: "gpt-4",
-      });
-
-      response.choices.forEach((choice) => {
-        setChats((prevChats) => [
-          ...prevChats,
-          {
-            role: choice.message.role as any,
-            content: choice.message.content as any,
-          },
-        ]);
-      });
-
-      setIsProcessing(false);
-    } catch (error) {
-      console.error(error);
-      setIsProcessing(false);
-    }
-  };
-
   const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setMessage(event.target.value);
   };
@@ -89,22 +52,41 @@ export default function TextGeneration() {
     }
   };
 
-  const handleClick = () => {
+  const handleClick = async () => {
     setChats((prevChats) => [...prevChats, { role: "user", content: message }]);
-    setMessage("");
+
+    setIsProcessing(true);
+    try {
+      const response = await openai.completions.create({
+        prompt: message,
+        model: "ft:davinci-002:personal:harfu-school:9jNYdc2F",
+      });
+
+      response.choices.forEach((choice) => {
+        setChats((prevChats) => [
+          ...prevChats,
+          {
+            role: "assistant",
+            content: choice.text.trim(),
+          },
+        ]);
+      });
+
+      setIsProcessing(false);
+      setMessage("");
+    } catch (error) {
+      console.error(error);
+      setIsProcessing(false);
+      setMessage("");
+    }
   };
 
   const handleClear = () => {
-    setChats([
-      {
-        role: "system",
-        content: "You are a helpful assistant.",
-      },
-    ]);
+    setChats([]);
   };
 
   const renderChat = () => {
-    if (chats.length > 1) {
+    if (chats.length > 0) {
       return chats.map((chat, index) => {
         if (chat.role === "system") {
           return null;
@@ -149,14 +131,14 @@ export default function TextGeneration() {
           <Link href="/">
             <FontAwesomeIcon icon={faArrowLeft} className="text-slate-300" />
           </Link>
-          <div className="text-slate-300">Text Generation</div>
+          <div className="text-slate-300">Harfu's School</div>
         </div>
         <div>
           <FontAwesomeIcon
             onClick={handleClear}
             icon={faTrash}
             className={`text-red-400 cursor-pointer ${
-              chats.length > 1 ? "" : "hidden"
+              chats.length > 0 ? "" : "hidden"
             }`}
           />
         </div>

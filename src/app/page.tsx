@@ -12,6 +12,9 @@ export default function Home() {
       <Link href="/text-to-speech" className="btn btn-outline md:min-w-64">
         Text to Speech
       </Link>
+      <Link href="/text-generation-custom" className="btn btn-outline md:min-w-64">
+        Text Generation Custom (Harfu's School)
+      </Link>
     </main>
   );
 }

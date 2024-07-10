@@ -149,7 +149,9 @@ export default function TextToSpeech() {
           <FontAwesomeIcon
             onClick={handleClear}
             icon={faTrash}
-            className="text-red-400 cursor-pointer"
+            className={`text-red-400 cursor-pointer ${
+              chats.length > 0 ? "" : "hidden"
+            }`}
           />
         </div>
       </div>

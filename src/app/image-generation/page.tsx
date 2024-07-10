@@ -4,7 +4,11 @@ import {
   faFaceGrinStars,
   faPaperPlane,
 } from "@fortawesome/free-regular-svg-icons";
-import { faArrowLeft, faSpinner } from "@fortawesome/free-solid-svg-icons";
+import {
+  faArrowLeft,
+  faSpinner,
+  faTrash,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Link from "next/link";
 import OpenAI from "openai";
@@ -84,6 +88,10 @@ export default function ImageGeneration() {
     }
   };
 
+  const handleClear = () => {
+    setChats([]);
+  };
+
   const renderChat = () => {
     if (chats.length > 0) {
       return chats.map((chat, index) => {
@@ -132,11 +140,22 @@ export default function ImageGeneration() {
 
   return (
     <div className="relative max-w-7xl p-4 bg-slate-800">
-      <div className="fixed top-0 left-0 right-0 flex gap-4 bg-slate-900 p-4">
-        <Link href="/">
-          <FontAwesomeIcon icon={faArrowLeft} className="text-slate-300" />
-        </Link>
-        <div className="text-slate-300">Image Generation</div>
+      <div className="fixed top-0 left-0 right-0 flex justify-between bg-slate-900 p-4">
+        <div className="flex gap-4">
+          <Link href="/">
+            <FontAwesomeIcon icon={faArrowLeft} className="text-slate-300" />
+          </Link>
+          <div className="text-slate-300">Image Generation</div>
+        </div>
+        <div>
+          <FontAwesomeIcon
+            onClick={handleClear}
+            icon={faTrash}
+            className={`text-red-400 cursor-pointer ${
+              chats.length > 0 ? "" : "hidden"
+            }`}
+          />
+        </div>
       </div>
       <div className="h-screen overflow-auto flex flex-col gap-2 py-16">
         {renderChat()}
