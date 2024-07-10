@@ -4,8 +4,9 @@ import {
   faFaceGrinStars,
   faPaperPlane,
 } from "@fortawesome/free-regular-svg-icons";
-import { faSpinner } from "@fortawesome/free-solid-svg-icons";
+import { faArrowLeft, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Link from "next/link";
 import OpenAI from "openai";
 import { useEffect, useState } from "react";
 
@@ -131,7 +132,13 @@ export default function ImageGeneration() {
 
   return (
     <div className="relative max-w-7xl p-4 bg-slate-800">
-      <div className="h-screen overflow-auto flex flex-col gap-2 pb-16">
+      <div className="fixed top-0 left-0 right-0 flex gap-4 bg-slate-900 p-4">
+        <Link href="/">
+          <FontAwesomeIcon icon={faArrowLeft} className="text-slate-300" />
+        </Link>
+        <div className="text-slate-300">Image Generation</div>
+      </div>
+      <div className="h-screen overflow-auto flex flex-col gap-2 py-16">
         {renderChat()}
       </div>
       <div className="fixed bottom-0 left-0 right-0 p-4 flex items-center gap-4">
