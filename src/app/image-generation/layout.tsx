@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   description: "Generate images from text prompts",
 };
 
-export default function RootLayout({
+export default function Layout({
   children,
 }: Readonly<{
   children: React.ReactNode;

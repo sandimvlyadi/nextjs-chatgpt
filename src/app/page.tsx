@@ -9,6 +9,9 @@ export default function Home() {
       <Link href="/image-generation" className="btn btn-outline md:min-w-64">
         Image Generation
       </Link>
+      <Link href="/text-to-speech" className="btn btn-outline md:min-w-64">
+        Text to Speech
+      </Link>
     </main>
   );
 }
